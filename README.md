@@ -1,10 +1,30 @@
 # CRC Explorer
 
-An interactive Python/Tkinter app that demonstrates how a CRC remainder is
-calculated using binary XOR (modulo-2) long division. The University of
-Gibraltar logo is used for the app branding.
+CRC Explorer includes a static, browser-based learning app and an interactive
+Python/Tkinter desktop app. The browser app demonstrates CRC error detection
+with a clickable 64-byte data block and a step-by-step XOR division exercise;
+the desktop app visualizes CRC modulo-2 long division.
+
+## Static web app
+
+Open `index.html` in a browser to run the learning app locally. It is a
+dependency-free static site (the optional fonts load from Google Fonts) and can
+be deployed to AWS Amplify Hosting by connecting this repository. Use the
+repository root as the app root; no build command or build output directory is
+required.
+
+The data-block demonstration calculates a checksum over 64 random bytes using
+a selectable CRC-8, CRC-16, or CRC-32 standard, including each standard's
+initial value, reflection, and final XOR settings. Select a displayed
+hexadecimal byte to inspect and flip its individual bits; the checksum
+recalculates as bits change. The XOR lab steps through modulo-2 long division
+one bit position at a time, with back/reset controls, and shows the resulting CRC
+and transmitted codeword when complete. It accepts a 16-bit message and a
+selectable standard or custom generator polynomial.
 
 ## Run
+
+### Desktop app
 
 Requirements: Python 3 with Tkinter. Tkinter is included with most standard
 Python installations; on some Linux distributions it is provided by a separate

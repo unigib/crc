@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101923">
+    <meta
+      name="description"
+      content="An interactive guide to Ethernet CRCs and binary XOR division."
+    >
+    <title>CRC Explorer — See errors. Understand checks.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="university-brand" href="#" aria-label="University of Gibraltar CRC Explorer home">
+        <span class="university-logo-frame">
+          <img src="logo.png" alt="University of Gibraltar crest">
+        </span>
+        <span class="university-brand-copy">
+          <strong>UNIVERSITY OF GIBRALTAR</strong>
+          <span>CRC EXPLORER <i aria-hidden="true"></i> DIGITAL SYSTEMS</span>
+        </span>
+      </a>
+      <a class="header-link" href="#how-it-works">How CRC &amp; XOR work <span aria-hidden="true">↓</span></a>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="live-dot"></span> A hands-on guide to error detection</p>
+          <h1 id="page-title">See errors.<br><span>Understand checks.</span></h1>
+          <p class="hero-intro">
+            CRCs use simple XOR-based polynomial division to create a compact fingerprint
+            for a message. Follow the bits to see how the sender creates it—and how the
+            receiver uses it to spot changes.
+          </p>
+          <a class="primary-link" href="#data-demo">Try the CRC check <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="hero-core">CRC<span>32</span></div>
+          <span class="orbit-bit bit-one">1</span>
+          <span class="orbit-bit bit-two">0</span>
+          <span class="orbit-bit bit-three">1</span>
+          <span class="art-caption">BITS IN · CHECK OUT</span>
+        </div>
+        <div class="hero-index"><span>01</span> / 02</div>
+      </section>
+
+      <section class="how-section" id="how-it-works" aria-labelledby="how-title">
+        <div class="how-heading">
+          <p class="eyebrow section-kicker"><span>THE IDEA</span> FROM LOGIC GATES TO CRC</p>
+          <h2 id="how-title">XOR does the dividing.<br><span>CRC checks the message.</span></h2>
+          <p class="how-intro">
+            Together, these ideas let a receiver check whether data changed on its way across a network.
+          </p>
+        </div>
+        <div class="how-cards">
+          <article class="how-card xor-explainer">
+            <span class="how-number">01 / THE OPERATION</span>
+            <h3>XOR compares bits</h3>
+            <p>
+              Compare two bits at a time: matching bits produce 0; different bits produce 1.
+              There are no carries or borrows, so XOR works neatly in binary division.
+            </p>
+            <div class="xor-example" aria-label="1011 XOR 1101 equals 0110">
+              <span>1011</span>
+              <span><b aria-hidden="true">⊕</b> 1101</span>
+              <strong>0110</strong>
+            </div>
+            <span class="example-caption">Same → 0 &nbsp; Different → 1</span>
+          </article>
+          <article class="how-card crc-explainer">
+            <span class="how-number">02 / THE CHECK</span>
+            <h3>CRC checks a message</h3>
+            <p>
+              The sender appends zeroes, divides the bits by an agreed generator using XOR,
+              then appends the remainder to the message. The receiver divides the received
+              codeword by the same generator: a zero remainder means it passes this check.
+            </p>
+            <div class="crc-flow" aria-label="Message plus zeroes, divided by generator, gives a remainder appended as the CRC">
+              <span>MESSAGE<br><b>+ zeroes</b></span>
+              <i aria-hidden="true">÷</i>
+              <span>GENERATOR<br><b>using XOR</b></span>
+              <i aria-hidden="true">→</i>
+              <span>REMAINDER<br><b>becomes CRC</b></span>
+            </div>
+          </article>
+          <article class="how-card hardware-card">
+            <div class="hardware-copy">
+              <span class="how-number">03 / THE HARDWARE</span>
+              <h3>Modulo-2 division in a circuit</h3>
+              <p>
+                This CRC-4 circuit divides a serial bit stream using XOR gates and a
+                four-bit shift register. Each clock feeds in one bit; the register shifts
+                and the feedback XORs apply the generator polynomial, all directly in
+                hardware rather than as a software loop.
+              </p>
+              <p class="hardware-caveat">
+                For generator 10011 (x⁴ + x + 1), send the message bits followed by four
+                zeroes. Starting from 0000, the register then contains the CRC remainder.
+              </p>
+            </div>
+            <div class="circuit-diagram">
+              <div class="circuit-heading">
+                <span>CRC-4 MODULO-2 DIVIDER</span>
+                <span>GENERATOR 10011</span>
+              </div>
+              <div class="circuit-scroll">
+                <svg class="crc-circuit" viewBox="0 0 920 460" role="img" aria-labelledby="crc-circuit-title crc-circuit-description">
+                  <title id="crc-circuit-title">CRC-4 modulo-2 divider circuit</title>
+                  <desc id="crc-circuit-description">
+                    A serial input and the Q3 feedback output enter an XOR gate to form feedback f.
+                    The feedback connects to D0 and to a second XOR with Q0, whose output connects
+                    to D1. Q1 connects to D2 and Q2 connects to D3. Four clocked D flip-flops hold
+                    the remainder for generator 10011, or x to the fourth plus x plus 1.
+                  </desc>
+                  <defs>
+                    <marker id="circuit-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8f1429"></path>
+                    </marker>
+                  </defs>
+                  <g class="wire">
+                    <path d="M 24 105 H 145" marker-end="url(#circuit-arrow)"></path>
+                    <path d="M 228 105 H 280 V 165 H 350" marker-end="url(#circuit-arrow)"></path>
+                    <path d="M 280 165 V 295 H 470" marker-end="url(#circuit-arrow)"></path>
+                    <path d="M 430 165 H 450 V 270 H 470" marker-end="url(#circuit-arrow)"></path>
+                    <path d="M 552 275 H 555 V 165 H 570" marker-end="url(#circuit-arrow)"></path>
+                    <path d="M 650 165 H 680" marker-end="url(#circuit-arrow)"></path>
+                    <path d="M 760 165 H 790" marker-end="url(#circuit-arrow)"></path>
+                    <path d="M 870 165 H 895 V 38 H 115 V 128 H 145" marker-end="url(#circuit-arrow)"></path>
+                    <path d="M 390 205 V 350"></path>
+                    <path d="M 610 205 V 350"></path>
+                    <path d="M 720 205 V 350"></path>
+                    <path d="M 830 205 V 350"></path>
+                    <path d="M 330 350 H 895"></path>
+                  </g>
+                  <g class="wire-labels">
+                    <text x="24" y="88">SERIAL INPUT BIT</text>
+                    <text x="248" y="96">f</text>
+                    <text x="810" y="29">Q3 FEEDBACK</text>
+                    <text x="365" y="342">CLK</text>
+                    <text x="585" y="342">CLK</text>
+                    <text x="695" y="342">CLK</text>
+                    <text x="805" y="342">CLK</text>
+                  </g>
+                  <g class="logic-gate">
+                    <rect x="145" y="75" width="83" height="60" rx="5"></rect>
+                    <text x="186.5" y="111" text-anchor="middle">XOR</text>
+                    <text x="151" y="101">A</text>
+                    <text x="151" y="128">B</text>
+                    <text x="208" y="101">f</text>
+                    <rect x="470" y="245" width="82" height="60" rx="5"></rect>
+                    <text x="511" y="281" text-anchor="middle">XOR</text>
+                    <text x="476" y="271">A</text>
+                    <text x="476" y="298">B</text>
+                  </g>
+                  <g class="flip-flop">
+                    <rect x="350" y="125" width="80" height="80" rx="4"></rect>
+                    <text x="360" y="151">D</text><text x="400" y="151">Q0</text>
+                    <path d="M 382 205 l 8 8 8 -8 z"></path>
+                    <text x="375" y="187">DFF</text>
+                    <rect x="570" y="125" width="80" height="80" rx="4"></rect>
+                    <text x="580" y="151">D</text><text x="620" y="151">Q1</text>
+                    <path d="M 602 205 l 8 8 8 -8 z"></path>
+                    <text x="595" y="187">DFF</text>
+                    <rect x="680" y="125" width="80" height="80" rx="4"></rect>
+                    <text x="690" y="151">D</text><text x="730" y="151">Q2</text>
+                    <path d="M 712 205 l 8 8 8 -8 z"></path>
+                    <text x="705" y="187">DFF</text>
+                    <rect x="790" y="125" width="80" height="80" rx="4"></rect>
+                    <text x="800" y="151">D</text><text x="840" y="151">Q3</text>
+                    <path d="M 822 205 l 8 8 8 -8 z"></path>
+                    <text x="815" y="187">DFF</text>
+                  </g>
+                  <g class="state-labels">
+                    <text x="350" y="410">D0 = f</text>
+                    <text x="530" y="410">D1 = Q0 ⊕ f</text>
+                    <text x="680" y="410">D2 = Q1</text>
+                    <text x="790" y="410">D3 = Q2</text>
+                    <text x="24" y="410">NEXT STATE / REMAINDER BITS</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </article>
+        </div>
+        <p class="how-note">
+          A CRC is an error-detection check, not encryption or error correction. A passing check
+          makes accidental corruption unlikely, but cannot prove that data is authentic or unchanged.
+        </p>
+      </section>
+
+      <section class="lesson-section" id="data-demo" aria-labelledby="data-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow section-kicker"><span>01</span> CHANGE A BIT</p>
+            <h2 id="data-title">One bit makes a difference.</h2>
+          </div>
+          <p class="section-description">
+            Select a hex byte from the block to inspect its bits. Flip one or more bits and
+            see the CRC recalculate over the entire block.
+          </p>
+        </div>
+
+        <div class="data-card">
+          <div class="card-topline">
+            <div class="frame-title"><span class="status-dot"></span> RANDOM DATA BLOCK</div>
+            <span class="protocol-tag">64 BYTES · 512 BITS</span>
+          </div>
+          <p class="data-instructions">Each hex box is one byte. Select one to inspect its eight bits, then click bits to flip them.</p>
+          <div id="data-grid" class="data-grid" aria-label="64-byte hexadecimal data block"></div>
+          <div class="byte-editor" aria-label="Selected byte bit editor">
+            <div class="byte-editor-heading">
+              <div>
+                <span class="frame-label">SELECTED BYTE</span>
+                <strong id="selected-byte-label" class="mono"></strong>
+              </div>
+              <button id="reset-data" class="reset-button" type="button">Reset all bytes</button>
+            </div>
+            <div id="selected-byte-bits" class="selected-byte-bits"></div>
+            <div class="bit-indexes" aria-hidden="true">
+              <span>BIT 7</span><span>BIT 6</span><span>BIT 5</span><span>BIT 4</span>
+              <span>BIT 3</span><span>BIT 2</span><span>BIT 1</span><span>BIT 0</span>
+            </div>
+          </div>
+          <div class="checksum-row">
+            <div>
+              <span id="crc-standard-name" class="frame-label">CRC-32/IEEE CHECKSUM</span>
+              <strong id="frame-crc" class="mono crc-value"></strong>
+            </div>
+            <label class="crc-standard-control" for="frame-polynomial">
+              <span class="frame-label">CRC POLYNOMIAL STANDARD</span>
+              <select id="frame-polynomial">
+                <option value="CRC-8">CRC-8 · 0x07</option>
+                <option value="CRC-16/CCITT-FALSE">CRC-16/CCITT-FALSE · 0x1021</option>
+                <option value="CRC-16/ARC">CRC-16/ARC · 0x8005</option>
+                <option value="CRC-32/IEEE" selected>CRC-32/IEEE · 0x04C11DB7</option>
+              </select>
+            </label>
+          </div>
+          <div id="crc-result" class="crc-result" aria-live="polite">
+            <span id="result-icon" class="result-icon" aria-hidden="true">✓</span>
+            <div>
+              <strong id="result-title"></strong>
+              <p id="result-description"></p>
+            </div>
+          </div>
+        </div>
+        <p class="fine-print">
+          The selector applies each CRC standard's polynomial and its initialization, reflection, and final-XOR settings.
+          Unlike simple parity, these CRCs detect every single-bit error and every burst up to
+          the polynomial degree (8, 16, or 32 bits). No fixed-size CRC detects every possible multi-bit error: some
+          longer error patterns can produce the same checksum. CRCs detect errors; they do not correct them.
+        </p>
+      </section>
+
+      <section class="xor-section" id="xor-lab" aria-labelledby="xor-title">
+        <div class="section-heading xor-heading">
+          <div>
+            <p class="eyebrow section-kicker"><span>02</span> THE BIT-BY-BIT LAB</p>
+            <h2 id="xor-title">Let’s do the math.</h2>
+          </div>
+          <p class="section-description">
+            A small message makes the CRC algorithm visible. Divide by XOR instead of
+            ordinary subtraction—there are no carries or borrows.
+          </p>
+        </div>
+
+        <div class="lab-card">
+          <div class="lab-inputs">
+            <label class="input-group" for="message-input">
+              <span>16-BIT MESSAGE</span>
+              <input id="message-input" class="mono" type="text" value="1101011010110011" maxlength="16" spellcheck="false" autocomplete="off">
+            </label>
+            <div class="input-group polynomial-group">
+              <span>GENERATOR POLYNOMIAL <span class="input-hint">leading 1 included</span></span>
+              <div class="polynomial-controls">
+                <select id="polynomial-standard" aria-label="Choose a standard generator polynomial">
+                  <option>CRC-4/ITU</option>
+                  <option>CRC-8</option>
+                  <option>CRC-16/CCITT-FALSE</option>
+                  <option>CRC-16/ARC</option>
+                  <option>CRC-32/IEEE</option>
+                  <option>Custom</option>
+                </select>
+                <input id="polynomial-input" class="mono" type="text" value="10011" maxlength="33" aria-label="Polynomial divisor bits" spellcheck="false" autocomplete="off">
+              </div>
+            </div>
+            <button id="calculate-button" class="calculate-button" type="button">Calculate CRC <span aria-hidden="true">→</span></button>
+          </div>
+          <p id="lab-error" class="lab-error" role="alert" hidden></p>
+
+          <div class="math-overview">
+            <div>
+              <span class="math-label">MESSAGE</span>
+              <strong id="overview-message" class="mono"></strong>
+            </div>
+            <span class="math-operator" aria-hidden="true">+</span>
+            <div>
+              <span class="math-label">APPENDED ZEROS</span>
+              <strong id="overview-zeros" class="mono"></strong>
+            </div>
+            <span class="math-operator" aria-hidden="true">÷</span>
+            <div>
+              <span class="math-label">DIVISOR</span>
+              <strong id="overview-divisor" class="mono"></strong>
+            </div>
+          </div>
+
+          <div class="walkthrough">
+            <div class="walkthrough-heading">
+              <div>
+                <span class="math-label">MODULO-2 LONG DIVISION</span>
+                <h3>Watch the division move.</h3>
+              </div>
+              <span id="division-progress" class="xor-count"></span>
+            </div>
+            <div class="division-player">
+              <p id="division-action" class="division-step-intro" aria-live="polite"></p>
+              <div class="division-tape-scroll">
+                <div class="division-tape-content">
+                  <span class="division-row-label quotient-label">QUOTIENT · 1 = XOR · 0 = SKIP</span>
+                  <div id="quotient-bits" class="bit-tape quotient-tape"></div>
+                  <span class="division-row-label">WORKING BITS</span>
+                  <div id="working-bits" class="bit-tape working-tape"></div>
+                  <span class="division-row-label divisor-label">DIVISOR · RED WINDOW SHOWS ALIGNMENT</span>
+                  <div id="divisor-bits" class="bit-tape divisor-tape"></div>
+                </div>
+              </div>
+              <div id="operation-equation" class="operation-equation" aria-live="polite">
+                Press “Next step” to start the division.
+              </div>
+              <div class="running-remainder" aria-live="polite">
+                <span class="math-label">RUNNING REMAINDER</span>
+                <strong id="running-remainder" class="mono">—</strong>
+              </div>
+              <div class="division-controls">
+                <button id="previous-step" class="step-button secondary-step" type="button">← Back</button>
+                <button id="reset-division" class="step-button secondary-step" type="button">Reset</button>
+                <button id="next-step" class="step-button primary-step" type="button">Next step →</button>
+              </div>
+            </div>
+            <div id="final-result" class="remainder-card" hidden>
+              <div>
+                <span class="math-label">CRC GENERATION QUOTIENT</span>
+                <strong id="quotient-value" class="mono"></strong>
+              </div>
+              <div>
+                <span class="math-label">FINAL CRC · REMAINDER</span>
+                <strong id="remainder-value" class="mono remainder-value"></strong>
+              </div>
+              <div class="codeword-result">
+                <span class="math-label">MESSAGE + CRC · TRANSMITTED STRING</span>
+                <strong id="codeword-value" class="mono"></strong>
+              </div>
+              <div id="verify-result" class="verify-result"></div>
+            </div>
+          </div>
+        </div>
+        <p class="fine-print lab-fine-print">
+          Choose a common generator polynomial or enter your own divisor bits. This short exercise
+          uses MSB-first, zero-initialized polynomial division with no reflection or final XOR, so it
+          teaches the polynomial/XOR principle rather than each named CRC standard's full parameters.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="footer-brand" href="#">
+        <img src="logo.png" alt="">
+        <span>UNIVERSITY OF GIBRALTAR <b>CRC Explorer</b></span>
+      </a>
+      <span>Understanding data, one bit at a time.</span>
+      <a href="#page-title">Back to top ↑</a>
+    </footer>
+  </body>
+</html>
